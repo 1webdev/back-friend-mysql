@@ -27,6 +27,7 @@ module.exports = function (app, db) {
     router.route('/balance').get(appApi.player.balance);
     router.route('/joinTournament').get(appApi.player.joinTournament);
     router.route('/resultTournament').post(appApi.player.resultTournament);
+    router.route('/reset').get(appApi.player.reset);
 
 
 

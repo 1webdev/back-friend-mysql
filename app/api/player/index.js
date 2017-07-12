@@ -399,14 +399,31 @@ exports.resultTournament = function (req, res, next) {
         Models.sequelize.query(sql);
 
         /* Updating tournament status */
-        var updateData = {status: 'finished'};
+        var updateData = {status: 'finished', winnerID: winnerID};
         Models.tournaments.update(updateData, {where: {id: result.id}}).then(function () {
-            output = {winners: [{playerId: winnerPlayerId, prize: totalPrize}]};
+            output = {status: 'OK', winners: [{playerId: winnerPlayerId, prize: totalPrize}]};
             res.jsonLog(output);
             return null;
         });
 
     });
+}
+
+exports.reset = function (req, res, next) {
+    var output = {};
+    Models.sequelize.query("SET FOREIGN_KEY_CHECKS = 0")
+            .then(function (result) {
+                return Models.sequelize.sync({force: true});
+            }).then(function () {
+        return Models.sequelize.query("SET FOREIGN_KEY_CHECKS = 1");
+    }).catch(function (err) {
+        res.jsonLog({isError: true, status: err.message});
+        return null;
+    });
+
+    output = {status: 'OK'};
+    res.jsonLog(output);
+    return null;
 }
 
 function _getRandomWinners(players) {
