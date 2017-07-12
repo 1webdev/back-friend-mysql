@@ -381,17 +381,27 @@ exports.resultTournament = function (req, res, next) {
         var totalPrize = tournamentDeposit * tournamentMembersCount;
 
         if (backersCount) {
-            var credit = tournamentDeposit / (backersCount + 1);
-            var totalCredit = credit * backersCount;
-            totalPrize = totalPrize - totalCredit;
-            /* Adding points to backers */
-            var backerIDs = [];
-            backers.forEach(function (backer) {
-                backerIDs.push(backer.backerID);
+
+            var isBacker = false;
+            backers.forEach(function (val) {
+                if (val.playerID == winnerID) {
+                    isBacker = true;
+                }
             });
-            var whereInIDs = backerIDs.join();
-            var sql = "UPDATE players SET points = points + " + credit + " WHERE id IN (" + whereInIDs + ");"
-            Models.sequelize.query(sql);
+
+            if (isBacker) {
+                var credit = tournamentDeposit / (backersCount + 1);
+                var totalCredit = credit * backersCount;
+                totalPrize = totalPrize - totalCredit;
+                /* Adding points to backers */
+                var backerIDs = [];
+                backers.forEach(function (backer) {
+                    backerIDs.push(backer.backerID);
+                });
+                var whereInIDs = backerIDs.join();
+                var sql = "UPDATE players SET points = points + " + credit + " WHERE id IN (" + whereInIDs + ");"
+                Models.sequelize.query(sql);
+            }
         }
 
         /* Adding Points to winner */

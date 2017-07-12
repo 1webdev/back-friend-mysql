@@ -1,8 +1,8 @@
 {
     "db": {
-        "host": "tournament-api.hm",
+        "host": "mysql",
         "username": "root",
-        "password": "123456",
+        "password": "example",
         "database": "tournament"
     }
 }

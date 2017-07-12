@@ -1,0 +1,133 @@
+<!-- Begin page content -->
+<div class="container">
+    <br>
+    <button type="button" class="btn btn-danger" (click)="resetDB()">RESET DB</button>
+    <hr>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="col-md-8">
+                <h2>Players</h2>
+                <div>
+                    <div class="alert alert-danger" *ngIf="errors.player && errors.player.length">
+                         <strong>Errors!</strong> 
+                        <p *ngFor="let error of errors.player">{{error}}</p>
+                    </div>
+                    <div class="alert alert-success" *ngIf="successMessage.player">
+                        <strong>Success!</strong> {{successMessage.player}}
+                    </div>
+
+                    <form class="form-inline">
+                        <div class="form-group">
+                            <label>Player ID</label>
+                            <input type="text" class="form-control" placeholder="please enter player ID" id="name" name="playerId" [(ngModel)]="player.playerId">
+                        </div>
+                        <div class="form-group">
+                            <label for="pwd">Points:</label>
+                            <input type="text" class="form-control" placeholder="please enter points" id="points" name="points" (keypress)="_keyPress($event)" [(ngModel)]="player.points">
+                        </div>
+                        <button type="button" class="btn btn-success" (click)="fund()">Add</button>
+                        <button type="button" class="btn btn-danger" (click)="take()">Take</button>
+                    </form>
+
+                    <br>
+                    <table class="col-md-12 table-bordered table-striped table-condensed cf">
+                        <thead class="cf">
+                            <tr>
+                                <th>Player ID</th>
+                                <th>Points</th>
+                                <th width="25%">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let player of players">
+                                <td>{{player.playerId}}</td>
+                                <td>{{player.points}}</td>
+                                <td>                                
+                                    <button type="button" class="btn btn-success" (click)="refreshPoint(player.playerId)">CHECK BALANCE</button>
+                                </td>
+                            </tr>
+                            <tr *ngIf="!players || !players.length">
+                                <td colspan="3" style="text-align:center;">No Players</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <h2>Announce tournament</h2>
+                <div id="no-more-tables">
+                    <div class="alert alert-danger" *ngIf="errors.tournament && errors.tournament.length">
+                         <strong>Errors!</strong>
+                        <p *ngFor="let error of errors.tournament">{{error}}</p>
+                    </div>
+                    <div class="alert alert-success" *ngIf="successMessage.tournament">
+                        <strong>Success!</strong> {{successMessage.tournament}}
+                    </div>
+                    <form>
+                        <div class="form-group">
+                            <label for="tournamentId">Tournament ID</label>
+                            <input type="text" class="form-control" placeholder="Enter tournament id" name="tournamentId" id="tournamentId" [(ngModel)]="tournament.tournamentId">
+                        </div>
+                        <div class="form-group">
+                            <label for="deposit">Deposit:</label>
+                            <input type="text" class="form-control" placeholder="Enter deposit" name="deposit" id="deposit" (keypress)="_keyPress($event)" [(ngModel)]="tournament.deposit">
+                        </div>
+                        <button type="submit" class="btn btn-default" (click)="announceTournament()">Announce</button>
+                    </form> 
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="col-md-6" *ngFor="let tournament of tournaments">
+                 <h2>Tournament #{{tournament.tournamentId}}, Deposit: {{tournament.deposit}}</h2>
+                <p class="tournament-status {{tournament.status}}"><b>Status: {{tournament.status}} <span class="opened" *ngIf="tournament.winner">, Winner: {{tournament.winner.playerId}}</span></b>                 
+                    <button type="button" class="btn btn-success set-winners" *ngIf="checkIfSetWinners(tournament)" (click)="resultTournament(tournament)">SET WINNERS</button>
+                </p>
+
+                <div class="alert alert-danger" *ngIf="errors.joinTournament && errors.joinTournament[tournament.tournamentId] && errors.joinTournament[tournament.tournamentId].length">
+                     <strong>Errors!</strong>
+                    <p *ngFor="let error of errors.joinTournament[tournament.tournamentId]">{{error}}</p>
+                </div>
+
+                <div class="alert alert-success" *ngIf="successMessage.joinTournament && successMessage.joinTournament[tournament.tournamentId]">
+                     <strong>Success!</strong> {{successMessage.joinTournament[tournament.tournamentId]}}
+                </div>
+                <table class="col-md-12 table-bordered table-striped table-condensed cf {{tournament.status == 'finished' ? 'disableTable' : ''}}">
+                    <thead class="cf">
+                        <tr>
+                            <th>Player ID</th>
+                            <th>Points</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let player of players">
+                            <td>{{player.playerId}}</td>
+                            <td>{{player.points}}</td>
+                            <td *ngIf="tournament.status == 'opened'">
+                                <p class="opened" *ngIf="checkIfAlreadyJoined(tournament, player)"><b>YOU JOINED</b></p>
+                                <button type="button" class="btn btn-success" *ngIf="checkIfCanJoin(tournament, player)" (click)="joinTournament(tournament, player)">JOIN</button>
+                                <button type="button" class="btn btn-warning" *ngIf="checkIfCanAskForBackers(tournament, player)" (click)="askForBackers(tournament, player)">BACK A FRIEND</button>
+                                <button type="button" class="btn btn-info" *ngIf="checkIfBackPlayer(tournament, player)" (click)="backPlayer(tournament, player)">
+                                        BACK {{backerPlayers[tournament.tournamentId].playerId}}
+                            </button>
+                        </td>
+                        <td *ngIf="tournament.status == 'finished'">
+                            <p class="finished"><b>TOURNAMENT IS FINISHED</b></p>
+                        </td>
+                    </tr>
+                    <tr *ngIf="!players || !players.length">
+                        <td colspan="3" style="text-align:center;">No Players</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+</div>
+

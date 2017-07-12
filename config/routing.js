@@ -49,4 +49,5 @@ module.exports = function (app, db) {
 
     // Routes handling api requests
     require(_root + '/config/routes/api')(app, db);
+    require(_root + '/config/routes/front')(app, db);
 };
