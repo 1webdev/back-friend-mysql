@@ -26,5 +26,4 @@ require('./config/express')(app, models);
 
 // Start the application
 app.listen(config.port);
-console.log('run node server');
-
+console.log('run node server: ' + "http://localhost:" + config.port);
