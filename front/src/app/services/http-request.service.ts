@@ -5,7 +5,7 @@ import 'rxjs/add/operator/toPromise';
 
 @Injectable()
 export class HttpRequestService {
-    private apiUrl = 'http://tournament-api.hm/api/';  // URL to web api
+    private apiUrl = '/api/';  // URL to web api
 
     constructor(private http: Http) {}
 
