@@ -90,8 +90,8 @@ CREATE TABLE `tournaments` (
   `updatedAt` datetime DEFAULT NULL,
   `deletedAt` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `winnerID` (`winnerID`),
-  CONSTRAINT `tournaments_ibfk_1` FOREIGN KEY (`winnerID`) REFERENCES `players` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+  KEY `FK_tournaments_to_players` (`winnerID`),
+  CONSTRAINT `FK_tournaments_to_players` FOREIGN KEY (`winnerID`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 
 /*Data for the table `tournaments` */
