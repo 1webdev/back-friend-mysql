@@ -1,0 +1,59 @@
+{
+  "name": "reminder-api-node-js",
+  "description": "",
+  "version": "0.0.1",
+  "author": "",
+  "scripts": {
+    "start": "node --expose-gc --harmony server.js"
+  },
+  "dependencies": {
+    "apn": "^2.1.1",
+    "async": "^2.5.0",
+    "async-each": "^1.0.1",
+    "aws-sdk": "^2.4.12",
+    "bluebird": "^3.0.0",
+    "body-parser": "^1.9.0",
+    "chalk": "^1.0.0",
+    "compression": "^1.2.2",
+    "cookie-parser": "^1.1.0",
+    "debug": "^2.1.1",
+    "email-validator": "^1.0.4",
+    "express": "^4.3.1",
+    "express-layout": "^0.1.0",
+    "express-validator": "^2.20.8",
+    "faker": "^3.1.0",
+    "fast-json-patch": "^0.5.2",
+    "ftp": "^0.3.10",
+    "gulp": "^3.6.2",
+    "hashids": "^1.1.0",
+    "hbs": "^3.0.1",
+    "html-pdf": "^2.1.0",
+    "i18n": "^0.5.0",
+    "jsonwebtoken": "^5.7.0",
+    "method-override": "^1.0.2",
+    "mime": "^1.3.4",
+    "mine": "^0.1.0",
+    "mkdirp": "^0.5.1",
+    "moment": "^2.13.0",
+    "moment-timezone": "^0.5.5",
+    "mysql": "^2.11.1",
+    "node-gcm": "^0.14.4",
+    "node-geocoder": "^3.13.0",
+    "nodemailer": "^2.5.0",
+    "nodemailer-ses-transport": "^1.4.0",
+    "sequelize": "^3.23.3",
+    "slug": "^0.9.1",
+    "superagent": "^2.1.0",
+    "swag": "^0.7.0",
+    "underscore": "^1.8.3",
+    "xml2js": "^0.4.17",
+    "xslt4node": "^0.3.2"
+  },
+  "devDependencies": {
+    "gulp": "^3.6.2",
+    "gulp-nodemon": "latest"
+  },
+  "engines": {
+    "node": "^4.4.0"
+  }
+}

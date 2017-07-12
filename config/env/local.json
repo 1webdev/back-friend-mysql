@@ -1,0 +1,26 @@
+{
+    "db": {
+        "connectionLimit": 100,
+        "host": "tournament-api.hm",
+        "username": "root",
+        "password": "123456",
+        "database": "tournament",
+        "debug": false,
+        "timezone": "Europe/Berlin",
+        "forceSchema": true,
+        "allowDestructiveSync": true
+    },
+    "i18n": {
+        "locales": ["en"],
+        "defaultLocale": "en",
+        "cookie": "locale"
+    },
+    "fileStorage": "/var/tmp/",
+    "staticLocation": "client",
+    "assetsLocation": "client",
+    "url": "http://tournament-api.hm",
+    "app": {
+        "name": "tournament-api - dev"
+    },
+    "logRequests": true
+}
