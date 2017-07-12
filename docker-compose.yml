@@ -1,0 +1,22 @@
+version: "2"
+volumes:
+    data-volume: {}
+services:
+    mysql:
+        image: mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: example
+        volumes:
+            - data-volume:/var/lib/mysql
+            - ./_sql/tournament.sql:/docker-entrypoint-initdb.d/init.sql
+    web:
+        build: .
+        ports:
+            - "3015:3015"
+        links:
+            - mysql
+        depends_on:
+            - mysql
+        volumes:
+            - ./:/usr/src/app
+            - /usr/src/app/node_modules
