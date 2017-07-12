@@ -1,0 +1,21 @@
+.rwd-table {
+    background: #34495E;
+    color: #fff;
+    border-radius: .4em;
+    overflow: hidden;
+}
+.rwd-table tr {
+    border-color: #46637f;
+}
+
+@media (min-width: 480px) {
+    .rwd-table th, .rwd-table td {
+        padding-right: 1em !important;
+        padding-left: 1em !important;
+        padding-top: 5px; 
+        padding-bottom: 5px; 
+    }
+}
+.rwd-table th, .rwd-table td:before {
+    color: #dd5;
+}

@@ -4,6 +4,7 @@ export class Tournament {
     deposit: number;
     status: string;
     tournament: any[] = [];
+    backers: any[] = [];
 
 
     validate() {

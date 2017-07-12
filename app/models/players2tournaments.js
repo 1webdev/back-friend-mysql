@@ -42,6 +42,7 @@ module.exports = function (sequelize, DataTypes) {
             associate: function (models) {
                 Players2Tournaments.belongsTo(models.tournaments, {foreignKey: 'tournamentID', as: 'tournament'});
                 Players2Tournaments.belongsTo(models.players, {foreignKey: 'playerID', as: 'player'});
+                Players2Tournaments.hasMany(models.backers, {foreignKey: 'playerJoinedId', as: 'backers'});
             }
         }
 

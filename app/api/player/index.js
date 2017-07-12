@@ -55,7 +55,7 @@ exports.take = function (req, res, next) {
             where: {playerId: playerId}
         }).then(function (player) {
             if (!player) {
-                var errors = ['Sorry, this player ID does not exist.'];
+                var errors = ['Sorry, this player ID does not exists.'];
                 output = {status: 'ERROR', errors: errors};
                 res.jsonLog(output);
                 return null;
@@ -78,12 +78,20 @@ exports.announceTournament = function (req, res, next) {
         var deposit = req.query.deposit;
 
         var tournamentData = {tournamentId: tournamentId, deposit: deposit, status: 'opened'};
-        Models.tournaments.create(tournamentData).then(function (result) {
-            output = {status: 'OK', message: 'You successfully announced tournament!'};
-            res.jsonLog(output);
-            return null;
 
-        });
+        Models.tournaments.findOrCreate({where: {tournamentId: tournamentId}, defaults: tournamentData})
+                .spread(function (tournament, created) {
+                    if (created) {
+                        output = {status: 'OK', message: 'You successfully announced tournament!'};
+                        res.jsonLog(output);
+                        return null;
+                    } else {
+                        var errors = ['Sorry, this tournamentId already exists.'];
+                        output = {status: 'ERROR', errors: errors};
+                        res.jsonLog(output);
+                        return null;
+                    }
+                });
 
     });
 }
@@ -102,7 +110,13 @@ exports.getTournaments = function (req, res, next) {
                 required: false,
                 as: 'winner'
 
-            }
+            },
+            {
+                model: Models.backers,
+                required: false,
+                as: 'backers'
+
+            },
         ]
     }).then(function (result) {
         output = {status: 'OK', tournaments: result};
@@ -270,30 +284,32 @@ exports.joinTournament = function (req, res, next) {
                             return null;
                         }
 
-                        /* Multiple insert backers to DB  */
-
-                        var backers = [];
-                        playerIDs.forEach(function (backerID) {
-                            var backer = {
-                                playerID: playersToTournaments.playerID,
-                                backerID: backerID,
-                                tournamentID: playersToTournaments.tournamentID,
-                                points: backerDeposit
-                            }
-                            backers.push(backer);
-                        });
-
-                        Models.backers.bulkCreate(backers);
-                        /* Add playerID to playerIDs */
-                        playerIDs.push(playersToTournaments.playerID);
-                        var whereInIDs = playerIDs.join();
-                        var sql = "UPDATE players SET points = points - " + backerDeposit + " WHERE id IN (" + whereInIDs + ");"
-
-                        /* Take Point from players */
-                        Models.sequelize.query(sql);
-
                         /* Joining player to tournament */
                         Models.players2tournaments.create(playersToTournaments).then(function (result) {
+
+                            /* Multiple insert backers to DB  */
+
+                            var backers = [];
+                            playerIDs.forEach(function (backerID) {
+                                var backer = {
+                                    playerJoinedId: result.id,
+                                    backerID: backerID,
+                                    tournamentID: playersToTournaments.tournamentID,
+                                    points: backerDeposit
+                                }
+                                backers.push(backer);
+                            });
+
+                            Models.backers.bulkCreate(backers);
+
+                            /* Add playerID to playerIDs */
+                            playerIDs.push(playersToTournaments.playerID);
+                            var whereInIDs = playerIDs.join();
+                            var sql = "UPDATE players SET points = points - " + backerDeposit + " WHERE id IN (" + whereInIDs + ");"
+
+                            /* Take Point from players */
+                            Models.sequelize.query(sql);
+
                             output = {status: 'OK', message: 'You successfully join to tournament!'};
                             res.jsonLog(output);
                             return null;
@@ -332,13 +348,13 @@ exports.resultTournament = function (req, res, next) {
                     {
                         model: Models.players,
                         as: 'player'
+                    },
+                    {
+                        model: Models.backers,
+                        required: false,
+                        as: 'backers'
                     }
                 ]
-            },
-            {
-                model: Models.backers,
-                required: false,
-                as: 'backers'
             }
         ]
     }).then(function (result) {
@@ -362,8 +378,7 @@ exports.resultTournament = function (req, res, next) {
         var tournamentDeposit = parseInt(result.deposit);
         var tournamentMembers = result.tournament ? result.tournament : [];
         var tournamentMembersCount = tournamentMembers.length ? tournamentMembers.length : 0;
-        var backers = result.backers ? result.backers : [];
-        var backersCount = backers.length ? backers.length : 0;
+
 
 
         /* Checking if there are enough members for the tournament  */
@@ -380,28 +395,22 @@ exports.resultTournament = function (req, res, next) {
         var winnerPlayerId = winner.player.playerId;
         var totalPrize = tournamentDeposit * tournamentMembersCount;
         var winPrize = totalPrize;
+
+        var backers = winner.backers || [];
+        var backersCount = backers.length;
+
         if (backersCount) {
-
-            var isBacker = false;
-            backers.forEach(function (val) {
-                if (val.playerID == winnerID) {
-                    isBacker = true;
-                }
+            var credit = totalPrize / (backersCount + 1);
+            /* Adding points to backers */
+            var backerIDs = [];
+            backers.forEach(function (backer) {
+                backerIDs.push(backer.backerID);
             });
+            var whereInIDs = backerIDs.join();
+            winPrize = credit;
+            var sql = "UPDATE players SET points = points + " + credit + " WHERE id IN (" + whereInIDs + ");"
+            Models.sequelize.query(sql);
 
-            if (isBacker) {
-                var credit = totalPrize / (backersCount + 1);
-
-                /* Adding points to backers */
-                var backerIDs = [];
-                backers.forEach(function (backer) {
-                    backerIDs.push(backer.backerID);
-                });
-                var whereInIDs = backerIDs.join();
-                winPrize = credit;
-                var sql = "UPDATE players SET points = points + " + credit + " WHERE id IN (" + whereInIDs + ");"
-                Models.sequelize.query(sql);
-            }
         }
 
         /* Adding Points to winner */

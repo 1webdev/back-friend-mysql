@@ -110,6 +110,7 @@
                             <td>{{player.points}}</td>
                             <td *ngIf="tournament.status == 'opened'">
                                 <p class="opened" *ngIf="checkIfAlreadyJoined(tournament, player)"><b>YOU JOINED</b></p>
+                                <p class="backer" *ngIf="checkIfAlreadyBacker(tournament, player)"><b>IS BACKER</b></p>
                                 <button type="button" class="btn btn-success" *ngIf="checkIfCanJoin(tournament, player)" (click)="joinTournament(tournament, player)">JOIN</button>
                                 <button type="button" class="btn btn-warning" *ngIf="checkIfCanAskForBackers(tournament, player)" (click)="askForBackers(tournament, player)">BACK A FRIEND</button>
                                 <button type="button" class="btn btn-info" *ngIf="checkIfBackPlayer(tournament, player)" (click)="backPlayer(tournament, player)">

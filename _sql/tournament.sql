@@ -22,7 +22,7 @@ DROP TABLE IF EXISTS `backers`;
 
 CREATE TABLE `backers` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `playerID` int(11) unsigned NOT NULL,
+  `playerJoinedId` int(11) unsigned NOT NULL,
   `backerID` int(11) unsigned NOT NULL,
   `tournamentID` int(11) unsigned NOT NULL,
   `points` int(11) DEFAULT NULL,
@@ -32,11 +32,11 @@ CREATE TABLE `backers` (
   PRIMARY KEY (`id`),
   KEY `FK_backers_to_tournaments` (`tournamentID`),
   KEY `FK_backers_backer_to_players` (`backerID`),
-  KEY `FK_backers_player_to_players` (`playerID`),
-  CONSTRAINT `FK_backers_player_to_players` FOREIGN KEY (`playerID`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  KEY `FK_backers_to_player2tournament` (`playerJoinedId`),
+  CONSTRAINT `FK_backers_to_player2tournament` FOREIGN KEY (`playerJoinedId`) REFERENCES `players2tournaments` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `FK_backers_backer_to_players` FOREIGN KEY (`backerID`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `FK_backers_to_tournaments` FOREIGN KEY (`tournamentID`) REFERENCES `tournaments` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8;
 
 /*Data for the table `backers` */
 
@@ -52,7 +52,7 @@ CREATE TABLE `players` (
   `updatedAt` datetime DEFAULT NULL,
   `deletedAt` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8;
 
 /*Data for the table `players` */
 
@@ -68,11 +68,11 @@ CREATE TABLE `players2tournaments` (
   `updatedAt` datetime DEFAULT NULL,
   `deletedAt` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `playerID` (`playerID`),
   KEY `FK_players2tournaments_to_tournaments` (`tournamentID`),
-  CONSTRAINT `FK_players2tournaments_to_tournaments` FOREIGN KEY (`tournamentID`) REFERENCES `tournaments` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `players2tournaments_ibfk_1` FOREIGN KEY (`playerID`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8;
+  KEY `FK_players2tournaments_to_players` (`playerID`),
+  CONSTRAINT `FK_players2tournaments_to_players` FOREIGN KEY (`playerID`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `FK_players2tournaments_to_tournaments` FOREIGN KEY (`tournamentID`) REFERENCES `tournaments` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8;
 
 /*Data for the table `players2tournaments` */
 
@@ -92,7 +92,7 @@ CREATE TABLE `tournaments` (
   PRIMARY KEY (`id`),
   KEY `FK_tournaments_to_players` (`winnerID`),
   CONSTRAINT `FK_tournaments_to_players` FOREIGN KEY (`winnerID`) REFERENCES `players` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8;
 
 /*Data for the table `tournaments` */
 

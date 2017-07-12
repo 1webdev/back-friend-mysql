@@ -177,13 +177,27 @@ export class HomeComponent implements OnInit {
         var playerPoints = player.points;
         var tournamentDeposit = tournament.deposit;
 
+        var isShow = true;
+
         if (tournament.tournament && tournament.tournament.length) {
-            var isShow = true;
+
             tournament.tournament.forEach((t, k) => {
                 if (t.playerID == player.id) {
                     isShow = false;
                 }
             });
+            if (!isShow) {
+                return false;
+            }
+        }
+
+        if (tournament.backers && tournament.backers.length) {
+            tournament.backers.forEach((b) => {
+                if (b.backerID == player.id) {
+                    isShow = false;
+                }
+            });
+
             if (!isShow) {
                 return false;
             }
@@ -300,6 +314,18 @@ export class HomeComponent implements OnInit {
         if (tournament.tournament && tournament.tournament.length) {
             tournament.tournament.forEach((t, k) => {
                 if (t.playerID == player.id) {
+                    isShow = true;
+                }
+            });
+        }
+        return isShow;
+    }
+
+    checkIfAlreadyBacker(tournament: Tournament, player: Player) {
+        var isShow = false;
+        if (tournament.backers && tournament.backers.length) {
+            tournament.backers.forEach((b, k) => {
+                if (b.backerID == player.id) {
                     isShow = true;
                 }
             });

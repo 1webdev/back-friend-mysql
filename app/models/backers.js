@@ -7,11 +7,11 @@ module.exports = function (sequelize, DataTypes) {
             primaryKey: true,
             autoIncrement: true
         },
-        playerID: {
+        playerJoinedId: {
             type: DataTypes.INTEGER(11).UNSIGNED,
             allowNull: false,
             references: {
-                model: 'players',
+                model: 'players2tournaments',
                 key: 'id'
             }
         },
