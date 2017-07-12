@@ -25,6 +25,6 @@ models.sequelize.sync({alter: true}).then(function () {
 require('./config/express')(app, models);
 
 // Start the application
-app.listen(3077);
+app.listen(config.port);
 console.log('run node server');
 
