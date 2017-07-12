@@ -379,7 +379,7 @@ exports.resultTournament = function (req, res, next) {
         var winnerID = winner.player.id;
         var winnerPlayerId = winner.player.playerId;
         var totalPrize = tournamentDeposit * tournamentMembersCount;
-
+        var winPrize = totalPrize;
         if (backersCount) {
 
             var isBacker = false;
@@ -390,22 +390,22 @@ exports.resultTournament = function (req, res, next) {
             });
 
             if (isBacker) {
-                var credit = tournamentDeposit / (backersCount + 1);
-                var totalCredit = credit * backersCount;
-                totalPrize = totalPrize - totalCredit;
+                var credit = totalPrize / (backersCount + 1);
+
                 /* Adding points to backers */
                 var backerIDs = [];
                 backers.forEach(function (backer) {
                     backerIDs.push(backer.backerID);
                 });
                 var whereInIDs = backerIDs.join();
+                winPrize = credit;
                 var sql = "UPDATE players SET points = points + " + credit + " WHERE id IN (" + whereInIDs + ");"
                 Models.sequelize.query(sql);
             }
         }
 
         /* Adding Points to winner */
-        var sql = "UPDATE players SET points = points + " + totalPrize + " WHERE id = " + winnerID + "";
+        var sql = "UPDATE players SET points = points + " + winPrize + " WHERE id = " + winnerID + "";
         Models.sequelize.query(sql);
 
         /* Updating tournament status */
@@ -421,15 +421,9 @@ exports.resultTournament = function (req, res, next) {
 
 exports.reset = function (req, res, next) {
     var output = {};
-    Models.sequelize.query("SET FOREIGN_KEY_CHECKS = 0")
-            .then(function (result) {
-                return Models.sequelize.sync({force: true});
-            }).then(function () {
-        return Models.sequelize.query("SET FOREIGN_KEY_CHECKS = 1");
-    }).catch(function (err) {
-        res.jsonLog({isError: true, status: err.message});
-        return null;
-    });
+
+    Models.tournaments.destroy({where: {}});
+    Models.players.destroy({where: {}});
 
     output = {status: 'OK'};
     res.jsonLog(output);
